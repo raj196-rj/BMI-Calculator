@@ -1,0 +1,250 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:#eef2f7;min-height:100vh}
+.topbar{background:#fff;border-bottom:0.5px solid var(--color-border-tertiary);padding:12px 20px;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#e8f4fd;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:20px;height:20px;stroke:#1a85d6;fill:none;stroke-width:2}
+.topbar-text h2{font-size:15px;font-weight:600;color:#1a202c}
+.topbar-text p{font-size:12px;color:#718096}
+.dashboard{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px;max-width:1100px;margin:0 auto}
+.card{background:#fff;border-radius:14px;padding:20px;border:0.5px solid var(--color-border-tertiary)}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:15px;font-weight:600;color:#1a202c}
+.card-header svg{width:18px;height:18px;stroke-width:1.8;fill:none}
+.toggle-row{display:flex;align-items:center;gap:10px;margin-left:auto}
+.toggle-label{font-size:13px;color:#718096}
+.switch{position:relative;width:44px;height:24px;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.track{position:absolute;inset:0;background:#1a85d6;border-radius:24px;transition:background .2s}
+.track::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .25s}
+input:not(:checked)+.track{background:#48bb78}
+input:checked+.track::before{transform:translateX(20px)}
+.field-label{font-size:11px;font-weight:600;color:#a0aec0;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.field{margin-bottom:14px}
+.inp{width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#2d3748;outline:none;transition:border .2s}
+.inp:focus{border-color:#1a85d6}
+.height-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.calc-btn{width:100%;padding:11px;background:#1a85d6;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
+.calc-btn:hover{background:#1570bb}
+.calc-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.disclaimer{font-size:11px;color:#a0aec0;text-align:center;margin-top:10px;line-height:1.4}
+.gauge-wrap{display:flex;flex-direction:column;align-items:center}
+.bmi-num{font-size:42px;font-weight:800;color:#1a202c;line-height:1;margin-top:6px}
+.bmi-cat{font-size:16px;font-weight:600;margin:2px 0 4px}
+.bmi-desc{font-size:12px;color:#718096;text-align:center;margin-bottom:14px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#718096}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.tip-card{background:#f0fdf4;border-left:3px solid #48bb78;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px}
+.tip-card.blue{background:#eff6ff;border-color:#1a85d6}
+.tip-icon{width:32px;height:32px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tip-icon svg{width:16px;height:16px;stroke-width:1.8;fill:none}
+.tip-title{font-size:13px;font-weight:600;color:#1a202c;margin-bottom:2px}
+.tip-body{font-size:12px;color:#4a5568;line-height:1.45}
+</style>
+
+<div class="topbar">
+  <div class="logo-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+  <div class="topbar-text"><h2>Health Metrics Dashboard</h2><p>BMI Calculator &amp; Health Advisor</p></div>
+</div>
+
+<div class="dashboard">
+  <div class="card">
+    <div class="card-header">
+      <svg viewBox="0 0 24 24" stroke="#1a85d6"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
+      BMI Calculator
+      <div class="toggle-row">
+        <span class="toggle-label" id="lbl-l">Imperial</span>
+        <label class="switch"><input type="checkbox" id="unitToggle" checked onchange="onToggle()"><span class="track"></span></label>
+        <span class="toggle-label" id="lbl-r">Metric</span>
+      </div>
+    </div>
+
+    <div class="field" id="wrap-weight">
+      <div class="field-label" id="wt-label">Weight (kg)</div>
+      <input class="inp" type="number" id="inp-weight" placeholder="e.g. 70" min="1" step="0.1"/>
+    </div>
+
+    <div id="metric-height">
+      <div class="field">
+        <div class="field-label">Height (cm)</div>
+        <input class="inp" type="number" id="inp-cm" placeholder="e.g. 175" min="1" step="0.1"/>
+      </div>
+    </div>
+
+    <div id="imperial-height" style="display:none">
+      <div class="height-row">
+        <div class="field">
+          <div class="field-label">Height (ft)</div>
+          <input class="inp" type="number" id="inp-ft" placeholder="5" min="1" step="1"/>
+        </div>
+        <div class="field">
+          <div class="field-label">Inches</div>
+          <input class="inp" type="number" id="inp-in" placeholder="9" min="0" max="11" step="1"/>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcBMI()">
+      <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+      Calculate BMI
+    </button>
+    <p class="disclaimer">BMI is a screening tool. Consult a healthcare provider for a complete health assessment.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <svg viewBox="0 0 24 24" stroke="#1a85d6"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      BMI Result
+    </div>
+    <div class="gauge-wrap">
+      <canvas id="gauge" width="240" height="140"></canvas>
+      <div class="bmi-num" id="out-num">--</div>
+      <div class="bmi-cat" id="out-cat" style="color:#718096">Enter values above</div>
+      <div class="bmi-desc" id="out-desc"></div>
+      <div class="legend">
+        <span class="leg-item"><span class="dot" style="background:#378ADD"></span> &lt; 18.5</span>
+        <span class="leg-item"><span class="dot" style="background:#48bb78"></span> 18.5–24.9</span>
+        <span class="leg-item"><span class="dot" style="background:#EF9F27"></span> 25–29.9</span>
+        <span class="leg-item"><span class="dot" style="background:#E24B4A"></span> 30+</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <svg viewBox="0 0 24 24" stroke="#E24B4A"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Health Advisor
+    </div>
+    <div id="tips-list">
+      <p style="font-size:13px;color:#a0aec0;text-align:center;padding:20px 0">Calculate your BMI to see personalized health tips.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+let isMetric=true;
+function onToggle(){
+  isMetric=document.getElementById('unitToggle').checked;
+  document.getElementById('wt-label').textContent=isMetric?'Weight (kg)':'Weight (lbs)';
+  document.getElementById('metric-height').style.display=isMetric?'block':'none';
+  document.getElementById('imperial-height').style.display=isMetric?'none':'block';
+  resetResult();
+}
+function resetResult(){
+  document.getElementById('out-num').textContent='--';
+  document.getElementById('out-cat').textContent='Enter values above';
+  document.getElementById('out-cat').style.color='#718096';
+  document.getElementById('out-desc').textContent='';
+  document.getElementById('tips-list').innerHTML='<p style="font-size:13px;color:#a0aec0;text-align:center;padding:20px 0">Calculate your BMI to see personalized health tips.</p>';
+  drawGauge(null);
+}
+const COLORS={Underweight:'#378ADD',Normal:'#48bb78',Overweight:'#EF9F27',Obese:'#E24B4A'};
+const DESCS={Underweight:'BMI below 18.5 indicates underweight',Normal:'BMI between 18.5–24.9 is normal range',Overweight:'BMI between 25–29.9 indicates overweight',Obese:'BMI of 30 or above indicates obesity'};
+const TIPS={
+  Underweight:[
+    {title:'Increase Caloric Intake',body:'Focus on nutrient-dense foods. Add healthy fats like avocados, nuts, and olive oil to your meals.',green:true},
+    {title:'Strength Training',body:'Build muscle mass with resistance exercises 3–4 times per week. Focus on compound movements.',green:true},
+    {title:'Increase Protein Intake',body:'Aim for 1.6–2.2g of protein per kg of body weight daily to support muscle growth.',green:false},
+    {title:'Quality Sleep',body:'Ensure 7–9 hours of quality sleep. Sleep is essential for muscle recovery and weight gain.',green:false}
+  ],
+  Normal:[
+    {title:'Maintain Your Lifestyle',body:'Keep up the great work with balanced nutrition and regular physical activity.',green:true},
+    {title:'Stay Active',body:'Continue 150 minutes of moderate aerobic activity per week plus strength training.',green:true},
+    {title:'Balanced Nutrition',body:'Focus on whole foods, lean proteins, healthy fats, and a variety of vegetables.',green:false},
+    {title:'Stay Hydrated',body:'Drink at least 2–3 liters of water daily. Proper hydration supports all body functions.',green:false}
+  ],
+  Overweight:[
+    {title:'Increase Cardio',body:'Aim for 30–45 minutes of moderate cardio 5 times per week. Walking, cycling, or swimming are great options.',green:true},
+    {title:'Caloric Deficit',body:'Create a moderate caloric deficit of 300–500 calories daily. Focus on whole foods and portion control.',green:true},
+    {title:'Add Resistance Training',body:'Include strength training 2–3 times weekly to preserve muscle mass while losing fat.',green:false},
+    {title:'Reduce Sugar Intake',body:'Limit sugary drinks and processed foods. Replace with water, tea, and whole fruits.',green:false}
+  ],
+  Obese:[
+    {title:'Consult a Healthcare Provider',body:'Seek personalized medical guidance before starting any weight loss program.',green:true},
+    {title:'Start Low-Impact Exercise',body:'Begin with walking, swimming, or cycling. Gradually increase intensity over time.',green:true},
+    {title:'Gradual Weight Loss',body:'Aim for sustainable loss of 0.5–1kg per week through diet and exercise changes.',green:false},
+    {title:'Work with a Dietitian',body:'A registered dietitian can create a meal plan tailored to your health goals and preferences.',green:false}
+  ]
+};
+function calcBMI(){
+  const w=parseFloat(document.getElementById('inp-weight').value);
+  if(!w||w<=0){alert('Please enter a valid weight.');return;}
+  let weightKg,heightM;
+  if(isMetric){
+    const h=parseFloat(document.getElementById('inp-cm').value);
+    if(!h||h<=0){alert('Please enter a valid height.');return;}
+    weightKg=w;heightM=h/100;
+  }else{
+    const ft=parseFloat(document.getElementById('inp-ft').value)||0;
+    const inches=parseFloat(document.getElementById('inp-in').value)||0;
+    if(ft<=0){alert('Please enter height in feet.');return;}
+    weightKg=w*0.453592;
+    heightM=(ft*12+inches)*0.0254;
+  }
+  let bmi=weightKg/(heightM*heightM);
+  bmi=Math.round(bmi*10)/10;
+  let cat;
+  if(bmi<18.5)cat='Underweight';
+  else if(bmi<25)cat='Normal';
+  else if(bmi<30)cat='Overweight';
+  else cat='Obese';
+  document.getElementById('out-num').textContent=bmi.toFixed(1);
+  const catEl=document.getElementById('out-cat');
+  catEl.textContent=cat;
+  catEl.style.color=COLORS[cat];
+  document.getElementById('out-desc').textContent=DESCS[cat];
+  drawGauge(bmi);
+  renderTips(cat);
+}
+function renderTips(cat){
+  const tips=TIPS[cat];
+  document.getElementById('tips-list').innerHTML=tips.map(t=>`
+    <div class="tip-card${t.green?'':' blue'}">
+      <div class="tip-icon">
+        <svg viewBox="0 0 24 24" stroke="${t.green?'#48bb78':'#1a85d6'}" fill="none" stroke-width="1.8">
+          ${t.green
+            ?'<path d="M12 22C6.48 22 2 17.52 2 12S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/><path d="M8 12l2.5 2.5L16 9"/>'
+            :'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+      </div>
+      <div><div class="tip-title">${t.title}</div><div class="tip-body">${t.body}</div></div>
+    </div>
+  `).join('');
+}
+function drawGauge(bmi){
+  const canvas=document.getElementById('gauge');
+  const ctx=canvas.getContext('2d');
+  const W=240,H=140,cx=120,cy=125,r=90,lw=18;
+  ctx.clearRect(0,0,W,H);
+  const segs=[
+    {color:'#378ADD',from:Math.PI,to:Math.PI+Math.PI*0.25},
+    {color:'#48bb78',from:Math.PI+Math.PI*0.25,to:Math.PI+Math.PI*0.55},
+    {color:'#EF9F27',from:Math.PI+Math.PI*0.55,to:Math.PI+Math.PI*0.75},
+    {color:'#E24B4A',from:Math.PI+Math.PI*0.75,to:Math.PI*2}
+  ];
+  segs.forEach(s=>{
+    ctx.beginPath();ctx.arc(cx,cy,r,s.from,s.to);
+    ctx.strokeStyle=s.color;ctx.lineWidth=lw;ctx.lineCap='butt';ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI*2);
+  ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=lw+1;ctx.stroke();
+  if(bmi!==null){
+    const MIN=10,MAX=40;
+    const pct=Math.min(Math.max((bmi-MIN)/(MAX-MIN),0),1);
+    const angle=Math.PI+pct*Math.PI;
+    const needleLen=r-10;
+    const nx=cx+needleLen*Math.cos(angle);
+    const ny=cy+needleLen*Math.sin(angle);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(nx,ny);
+    ctx.strokeStyle='#1a202c';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);
+    ctx.fillStyle='#1a202c';ctx.fill();
+    ctx.font='bold 10px sans-serif';ctx.fillStyle='#718096';ctx.textAlign='left';
+    ctx.fillText('10',cx-r-2,cy+4);
+    ctx.textAlign='right';
+    ctx.fillText('40+',cx+r+2,cy+4);
+  }
+}
+drawGauge(null);
+</script>
